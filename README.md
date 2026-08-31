@@ -1,3 +1,3 @@
 # InsightFlowAI_greatAgnetHackathon
 
-This is build for Great Agent Hackathon
+This agent is build for Great Agent Hackathon 2026
