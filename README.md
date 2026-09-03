@@ -362,7 +362,7 @@ InsightFlow-AI/
 
 #  Example Use Cases
 
-## 📈 Sales
+##  Sales
 
 **Question:**
 
@@ -372,7 +372,7 @@ The Sales Agent investigates sales trends, products, regions, and customer segme
 
 ---
 
-## 💰 Finance
+##  Finance
 
 **Question:**
 
@@ -382,7 +382,7 @@ The Finance Agent investigates revenue, costs, expenses, and other financial met
 
 ---
 
-## 🎧 Customer Support
+##  Customer Support
 
 **Question:**
 
@@ -392,7 +392,7 @@ The Support Agent analyzes complaint patterns, categories, and customer behavior
 
 ---
 
-## 👥 Customer Retention
+##  Customer Retention
 
 **Question:**
 
@@ -402,7 +402,7 @@ The system can combine Sales, Support, and Customer Analytics investigations.
 
 ---
 
-# 🆚 Traditional Analytics vs InsightFlow AI
+#  Traditional Analytics vs InsightFlow AI
 
 | Traditional Analytics      | InsightFlow AI                  |
 | -------------------------- | ------------------------------- |
@@ -415,7 +415,7 @@ The system can combine Sales, Support, and Customer Analytics investigations.
 
 ---
 
-# 🌟 What Makes InsightFlow AI Different?
+#  What Makes InsightFlow AI Different?
 
 Traditional AI business assistants often follow:
 
@@ -445,7 +445,7 @@ The goal is to build an **AI employee capable of investigating business problems
 
 ---
 
-# 🔐 Human-in-the-Loop
+#  Human-in-the-Loop
 
 For high-impact business actions, InsightFlow AI can incorporate human approval.
 
@@ -463,7 +463,7 @@ This provides an additional layer of control before potentially sensitive busine
 
 ---
 
-# 🚀 Future Roadmap
+#  Future Roadmap
 
 ### Phase 1 — Prototype
 
@@ -721,7 +721,7 @@ Insights should lead to practical next steps.
 
 ---
 
-# 🏆 Hackathon
+#  Hackathon
 
 InsightFlow AI was developed for **The Great Agent Hackathon 2026**.
 
@@ -733,34 +733,14 @@ The project explores how agentic AI and multi-agent orchestration can transform 
 
 ### Team Members
 
-* **Sneha Chaurasia** — AI / Full-Stack Development
-* **[Teammate Name]** — [Role / Contribution]
-
----
-
-# 🤝 Contributing
-
-Contributions and suggestions are welcome.
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Commit your changes
-5. Push the branch
-6. Open a Pull Request
-
-```bash
-git checkout -b feature/your-feature
-git add .
-git commit -m "Add: your feature"
-git push origin feature/your-feature
-```
+* **Mahek Chaurasia** — Backend Development
+* **Sneha Chaurasia** — Frontend and Ideology
 
 ---
 
 # 📄 License
 
-This project is licensed under the MIT License.
+This project is made for hackathon purpose.
 
 ---
 
