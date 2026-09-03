@@ -2,7 +2,7 @@
 
 > An AI employee that autonomously handles everyday business operations across support, sales, and finance.
 
-## 🚀 Overview
+##  Overview
 
 InsightFlow AI is an agentic business intelligence platform that helps businesses investigate problems, understand their root causes, and generate actionable recommendations.
 
@@ -20,7 +20,7 @@ InsightFlow AI can break this question into multiple investigations, delegate th
 
 ---
 
-## 🎯 Problem
+##  Problem
 
 Businesses generate large amounts of data across different departments such as:
 
@@ -50,7 +50,7 @@ This process is time-consuming and requires significant manual effort.
 
 ---
 
-## 💡 Our Solution
+##  Our Solution
 
 InsightFlow AI transforms business questions into autonomous investigations.
 
@@ -82,9 +82,9 @@ Instead of simply returning an AI-generated answer, the system creates an invest
 
 ---
 
-# ✨ Key Features
+#  Key Features
 
-### 🧠 Natural Language Business Queries
+###  Natural Language Business Queries
 
 Users can ask complex business questions using natural language.
 
@@ -98,7 +98,7 @@ No complex SQL queries or manual dashboard exploration is required.
 
 ---
 
-### 🔎 AI Investigation
+###  AI Investigation
 
 InsightFlow AI creates a structured investigation plan instead of immediately generating an answer.
 
@@ -122,7 +122,7 @@ Generate Recommendations
 
 ---
 
-### 🤖 Multi-Agent System
+###  Multi-Agent System
 
 Different AI agents specialize in different business domains.
 
@@ -146,7 +146,7 @@ The architecture allows additional specialist agents to be added as the platform
 
 ---
 
-### 🌳 Root Cause Analysis
+###  Root Cause Analysis
 
 InsightFlow AI focuses on identifying **why** a business problem occurred.
 
@@ -168,7 +168,7 @@ The system combines findings from different agents to identify the most signific
 
 ---
 
-### 💡 Actionable Recommendations
+###  Actionable Recommendations
 
 InsightFlow AI does not stop after finding a problem.
 
@@ -188,7 +188,7 @@ cancellation requests.
 
 ---
 
-### 👀 Transparent Agent Workflow
+###  Transparent Agent Workflow
 
 Users can see what the AI system is doing.
 
@@ -216,7 +216,7 @@ Investigation
 
 ---
 
-# 🔄 How It Works
+#  How It Works
 
 ## 1. Ask
 
@@ -256,7 +256,7 @@ The system generates actionable recommendations for the business user.
 
 ---
 
-# 🏗️ Architecture
+#  Architecture
 
 ```text
 ┌───────────────────────────────────────────────┐
@@ -291,45 +291,7 @@ The system generates actionable recommendations for the business user.
         Root Cause           Recommendations
 ```
 
----
 
-# 🖥️ Product Workflow
-
-InsightFlow AI provides a guided investigation experience:
-
-```text
-1. ASK
-   ↓
-2. INVESTIGATE
-   ↓
-3. AGENT NETWORK
-   ↓
-4. ROOT CAUSE
-   ↓
-5. RECOMMEND
-```
-
-### Ask
-
-Enter a natural-language business question.
-
-### Investigate
-
-The AI creates and executes an investigation plan.
-
-### Agent Network
-
-Specialized agents work on different parts of the problem.
-
-### Root Cause
-
-The system combines the findings and identifies the major causes.
-
-### Recommend
-
-The system provides actionable next steps.
-
----
 
 # 🛠️ Technology Stack
 
@@ -368,10 +330,10 @@ The system provides actionable next steps.
 * Git
 * GitHub
 * VS Code
-
+* Netfiy
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```text
 InsightFlow-AI/
@@ -398,7 +360,7 @@ InsightFlow-AI/
 
 ---
 
-# 🎯 Example Use Cases
+#  Example Use Cases
 
 ## 📈 Sales
 
