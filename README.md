@@ -1,4 +1,3 @@
-````markdown
 # InsightFlow AI
 
 > An AI employee that autonomously handles everyday business operations across support, sales, and finance.
