@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsightFlow AI — Autonomous Business Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7FB;
+    --surface:#FFFFFF;
+    --primary:#4338CA;
+    --primary-dark:#372AA8;
+    --primary-tint:#EEF2FF;
+    --accent:#2563EB;
+    --success:#059669;
+    --success-tint:#ECFDF5;
+    --warning:#D97706;
+    --warning-tint:#FFFBEB;
+    --danger:#DC2626;
+    --text:#111827;
+    --text-soft:#6B7280;
+    --text-faint:#9CA3AF;
+    --border:#E5E7EB;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(17,24,39,0.04), 0 8px 24px -12px rgba(17,24,39,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  h1,h2,h3,.display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  button:focus-visible, input:focus-visible, .clickable:focus-visible{
+    outline:2px solid var(--primary); outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  /* ===== APP SHELL ===== */
+  .app{ display:flex; min-height:100vh; }
+  .sidebar{
+    width:220px; flex-shrink:0; background:var(--surface);
+    border-right:1px solid var(--border); padding:24px 16px;
+    display:flex; flex-direction:column; gap:28px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; padding:0 8px; }
+  .brand-mark{
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg, var(--primary), var(--accent));
+    flex-shrink:0;
+  }
+  .brand-name{ font-family:'Space Grotesk'; font-weight:600; font-size:16px; }
+  .nav{ display:flex; flex-direction:column; gap:2px; }
+  .nav-item{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:9px; font-size:14px; font-weight:500;
+    color:var(--text-soft); text-align:left; width:100%; transition:background .15s, color .15s;
+  }
+  .nav-item .dot{ width:6px; height:6px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+  .nav-item.active{ background:var(--primary-tint); color:var(--primary); }
+  .nav-item.active .dot{ background:var(--primary); }
+  .nav-item:hover:not(.active){ background:#F9FAFB; color:var(--text); }
+  .sidebar-foot{ margin-top:auto; display:flex; align-items:center; gap:10px; padding:10px 8px; border-top:1px solid var(--border); padding-top:16px; }
+  .avatar{ width:30px; height:30px; border-radius:50%; background:var(--primary-tint); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0; }
+  .avatar-name{ font-size:13px; font-weight:500; }
+  .avatar-role{ font-size:11px; color:var(--text-faint); }
+
+  .main{ flex:1; display:flex; flex-direction:column; min-width:0; }
+
+  /* ===== STEPPER ===== */
+  .stepper{
+    display:flex; align-items:center; gap:6px; padding:16px 32px;
+    background:var(--surface); border-bottom:1px solid var(--border);
+    overflow-x:auto;
+  }
+  .step{
+    display:flex; align-items:center; gap:8px; padding:7px 12px 7px 8px;
+    border-radius:20px; font-size:12.5px; font-weight:500; color:var(--text-faint);
+    white-space:nowrap; transition:all .15s;
+  }
+  .step-num{
+    width:20px; height:20px; border-radius:50%; background:#F3F4F6; color:var(--text-faint);
+    display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:600;
+    font-family:'IBM Plex Mono'; flex-shrink:0; transition:all .15s;
+  }
+  .step.done .step-num{ background:var(--success); color:#fff; }
+  .step.done{ color:var(--text-soft); }
+  .step.active{ background:var(--primary-tint); color:var(--primary); }
+  .step.active .step-num{ background:var(--primary); color:#fff; }
+  .step-arrow{ color:var(--border); font-size:12px; }
+
+  .screen-wrap{ flex:1; padding:32px; overflow-y:auto; }
+  .screen{ display:none; max-width:900px; margin:0 auto; animation:fadein .35s ease; }
+  .screen.visible{ display:block; }
+  @keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .eyebrow{ font-size:12px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+  .screen-title{ font-size:26px; font-weight:600; margin-bottom:6px; }
+  .screen-sub{ font-size:14.5px; color:var(--text-soft); margin-bottom:28px; }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:24px;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:11px 20px;
+    border-radius:10px; font-size:14px; font-weight:600; transition:all .15s;
+  }
+  .btn-primary{ background:var(--primary); color:#fff; }
+  .btn-primary:hover{ background:var(--primary-dark); transform:translateY(-1px); }
+  .btn-ghost{ background:var(--surface); color:var(--text); border:1px solid var(--border); }
+  .btn-ghost:hover{ background:#F9FAFB; }
+  .btn-sm{ padding:8px 14px; font-size:13px; }
+  .btn[disabled]{ opacity:0.45; cursor:not-allowed; pointer-events:none; }
+
+  /* ===== DASHBOARD ===== */
+  .greet{ font-size:24px; font-weight:600; margin-bottom:4px; }
+  .greet-sub{ color:var(--text-soft); font-size:14.5px; margin-bottom:24px; }
+  .ask-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:16px;
+  }
+  .ask-label{ font-size:13px; font-weight:600; color:var(--text-soft); margin-bottom:10px; }
+  .ask-input-row{ display:flex; gap:10px; }
+  .ask-input{
+    flex:1; padding:13px 16px; border:1.5px solid var(--border); border-radius:10px;
+    font-size:14.5px; font-family:inherit; color:var(--text);
+  }
+  .ask-input:focus{ outline:none; border-color:var(--primary); }
+  .suggestions{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; }
+  .suggestion-chip{
+    padding:8px 14px; border:1px solid var(--border); border-radius:20px; font-size:13px;
+    color:var(--text-soft); background:var(--surface); transition:all .15s;
+  }
+  .suggestion-chip:hover{ border-color:var(--primary); color:var(--primary); background:var(--primary-tint); }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:32px; }
+  .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
+  .kpi-label{ font-size:12.5px; color:var(--text-soft); font-weight:500; margin-bottom:8px; }
+  .kpi-value{ font-size:22px; font-weight:600; font-family:'IBM Plex Mono'; margin-bottom:6px; }
+  .kpi-delta{ font-size:12.5px; font-weight:600; font-family:'IBM Plex Mono'; display:inline-flex; align-items:center; gap:3px; }
+  .kpi-delta.down{ color:var(--danger); }
+  .kpi-delta.up{ color:var(--success); }
+
+  .section-label{ font-size:13px; font-weight:600; color:var(--text-soft); margin-bottom:12px; }
+  .recent-item{
+    display:flex; align-items:center; justify-content:space-between; padding:13px 16px;
+    background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:14px;
+  }
+  .badge{ font-size:11.5px; font-weight:600; padding:4px 9px; border-radius:20px; }
+  .badge-done{ background:var(--success-tint); color:var(--success); }
+
+  /* ===== INVESTIGATION SCREEN ===== */
+  .question-banner{
+    background:var(--primary-tint); border:1px solid #DDD6FE; border-radius:var(--radius);
+    padding:16px 20px; margin-bottom:24px; font-size:15px; font-weight:500; color:var(--primary-dark);
+  }
+  .checklist{ display:flex; flex-direction:column; gap:2px; margin-bottom:24px; }
+  .check-item{
+    display:flex; align-items:center; gap:12px; padding:13px 6px;
+    border-bottom:1px solid var(--border); font-size:14.5px; color:var(--text-faint); transition:color .3s;
+  }
+  .check-item:last-child{ border-bottom:none; }
+  .check-item.done{ color:var(--text); }
+  .check-item.current{ color:var(--primary); font-weight:500; }
+  .check-icon{ width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .check-icon.pending{ border:2px solid var(--border); }
+  .check-icon.current{ border:2px solid var(--primary); position:relative; }
+  .check-icon.current::after{
+    content:''; position:absolute; inset:3px; border-radius:50%; background:var(--primary); animation:pulse 1.1s infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .check-icon.done{ background:var(--success); color:#fff; font-size:11px; }
+
+  .investigate-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:16px; align-items:start; }
+  .panel-title{ font-size:13px; font-weight:600; color:var(--text-soft); margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .agent-status-grid{ display:flex; flex-direction:column; gap:10px; }
+  .agent-status{
+    display:flex; align-items:center; justify-content:space-between; padding:12px 16px;
+    border:1px solid var(--border); border-radius:10px; font-size:13.5px; font-weight:500;
+    background:#FAFAFB;
+  }
+  .agent-status.as-complete{ background:var(--success-tint); border-color:#D1FAE5; }
+  .agent-status-dot{ width:8px; height:8px; border-radius:50%; margin-right:8px; flex-shrink:0; display:inline-block; }
+  .as-complete .agent-status-dot{ background:var(--success); }
+  .as-active .agent-status-dot{ background:var(--accent); animation:pulse 1.1s infinite; }
+  .as-waiting .agent-status-dot{ background:var(--border); }
+  .as-complete .agent-tag{ color:var(--success); }
+  .as-active .agent-tag{ color:var(--accent); }
+  .as-waiting .agent-tag{ color:var(--text-faint); }
+  .agent-tag{ font-size:12px; font-family:'IBM Plex Mono'; font-weight:600; }
+
+  /* ===== AGENT NETWORK ===== */
+  .network{ position:relative; padding:40px 20px 20px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:20px; }
+  .orch-node{
+    width:200px; margin:0 auto 50px; padding:16px; text-align:center; border-radius:12px;
+    background:linear-gradient(135deg, var(--primary), var(--accent)); color:#fff; box-shadow:0 8px 20px -8px rgba(67,56,202,.5);
+  }
+  .orch-node .t1{ font-size:10.5px; font-weight:600; opacity:.85; text-transform:uppercase; letter-spacing:.05em; }
+  .orch-node .t2{ font-family:'Space Grotesk'; font-weight:600; font-size:14.5px; margin-top:2px; }
+  svg.connectors{ position:absolute; top:80px; left:0; width:100%; height:70px; overflow:visible; }
+  svg.connectors path{ stroke:var(--border); stroke-width:2; fill:none; }
+  svg.connectors path.lit{ stroke:var(--primary); }
+  svg.connectors circle{ fill:var(--primary); opacity:0; }
+  .agent-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:start; }
+  .agent-node{
+    border:1.5px solid var(--border); border-radius:12px; padding:18px; text-align:left; transition:all .3s;
+    background:var(--surface); cursor:pointer;
+  }
+  .agent-node.lit{ border-color:var(--primary); }
+  .agent-node-head{ display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .agent-icon{
+    width:36px; height:36px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .agent-icon svg{ width:18px; height:18px; }
+  .agent-icon.icon-sales{ background:#D1FAE5; color:#059669; }
+  .agent-icon.icon-customer{ background:#FEF3C7; color:#D97706; }
+  .agent-icon.icon-finance{ background:#EDE9FE; color:#7C3AED; }
+  .agent-node .name{ font-family:'Space Grotesk'; font-weight:600; font-size:14.5px; margin-bottom:2px; }
+  .agent-node .subtitle{ font-size:12px; color:var(--text-soft); }
+  .agent-node-foot{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .agent-status-tag{ display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--text-faint); }
+  .agent-status-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--border); }
+  .agent-node.lit .agent-status-tag{ color:var(--success); }
+  .agent-node.lit .agent-status-tag .dot{ background:var(--success); }
+  .chevron{ font-size:11px; color:var(--text-faint); transition:transform .25s; }
+  .agent-node.expanded .chevron{ transform:rotate(180deg); }
+  .agent-node-body{
+    max-height:0; overflow:hidden; transition:max-height .3s ease;
+    font-size:12.5px; line-height:1.55; color:var(--text-soft);
+    background:#F9FAFB; border-radius:8px;
+  }
+  .agent-node.expanded .agent-node-body{ max-height:200px; padding:12px; }
+  .agent-node-body strong{ color:var(--text); }
+  .network-hint{ text-align:center; font-size:12.5px; color:var(--text-faint); margin-top:14px; }
+  .replay-btn{ display:block; margin:0 auto; }
+
+  /* ===== ROOT CAUSE ===== */
+  .rc-headline{ text-align:center; padding:28px 20px; margin-bottom:20px; }
+  .rc-headline .rc-eyebrow{ font-size:13px; color:var(--text-soft); margin-bottom:8px; }
+  .rc-headline .rc-main{ font-size:24px; font-weight:600; font-family:'Space Grotesk'; color:var(--danger); margin-bottom:14px; }
+  .rc-cause-pill{
+    display:inline-block; background:var(--warning-tint); color:var(--warning); border:1px solid #FDE68A;
+    padding:10px 20px; border-radius:10px; font-weight:600; font-size:15px; font-family:'Space Grotesk';
+  }
+  .impact-table{ display:flex; flex-direction:column; margin-bottom:20px; }
+  .impact-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 4px; border-bottom:1px solid var(--border); font-size:14px; }
+  .impact-row:last-child{ border-bottom:none; }
+  .impact-val{ font-family:'IBM Plex Mono'; font-weight:600; }
+  .impact-val.down{ color:var(--danger); } .impact-val.up{ color:var(--success); }
+
+  .chart-card{ margin-bottom:20px; }
+  .chart-bars{ display:flex; align-items:flex-end; gap:32px; height:150px; padding:0 20px; justify-content:center; }
+  .bar-group{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .bar{ width:56px; border-radius:6px 6px 0 0; background:var(--primary); transition:height 1s ease; }
+  .bar.faded{ background:#C7D2FE; }
+  .bar-label{ font-size:12px; color:var(--text-soft); font-weight:500; }
+  .bar-value{ font-size:12px; font-family:'IBM Plex Mono'; font-weight:600; }
+
+  .confidence-row{ display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+  .conf-circle{
+    width:64px; height:64px; border-radius:50%; flex-shrink:0;
+    background:conic-gradient(var(--success) 0% 87%, #E5E7EB 87% 100%);
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .conf-circle::after{ content:''; position:absolute; inset:6px; background:var(--surface); border-radius:50%; }
+  .conf-circle span{ position:relative; font-family:'IBM Plex Mono'; font-weight:600; font-size:14px; z-index:1; }
+  .evidence-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .evidence-chip{ font-size:12.5px; padding:6px 12px; border:1px solid var(--border); border-radius:20px; color:var(--text-soft); background:#F9FAFB; }
+
+  /* ===== RECOMMENDATION ===== */
+  .reco-card{ border:1.5px solid var(--primary); background:linear-gradient(180deg, var(--primary-tint), var(--surface) 40%); margin-bottom:20px; }
+  .reco-label{ font-size:12px; font-weight:700; color:var(--primary); letter-spacing:.05em; margin-bottom:10px; }
+  .reco-text{ font-size:19px; font-weight:600; font-family:'Space Grotesk'; margin-bottom:20px; line-height:1.4; }
+  .reco-impact{ display:flex; align-items:baseline; gap:8px; margin-bottom:20px; }
+  .reco-impact .val{ font-family:'IBM Plex Mono'; font-weight:600; font-size:22px; color:var(--success); }
+  .reco-impact .lbl{ font-size:13px; color:var(--text-soft); }
+  .support-list{ display:flex; flex-direction:column; gap:9px; margin-bottom:24px; }
+  .support-item{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .check-mark{ width:18px; height:18px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; }
+  .reco-actions{ display:flex; gap:10px; }
+  .approved-msg{ display:none; align-items:center; gap:8px; margin-top:14px; padding:12px 16px; background:var(--success-tint); color:var(--success); border-radius:10px; font-size:13.5px; font-weight:500; }
+  .approved-msg.show{ display:flex; }
+
+  .flow-recap{ display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; margin-top:8px; font-size:12px; color:var(--text-faint); font-family:'IBM Plex Mono'; }
+  .flow-recap span.node{ padding:4px 10px; border:1px solid var(--border); border-radius:20px; }
+
+  @media (max-width: 720px){
+    .sidebar{ display:none; }
+    .kpi-row, .agent-row, .agent-status-grid{ grid-template-columns:1fr; }
+    .screen-wrap{ padding:18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">InsightFlow</div>
+    </div>
+    <div class="nav">
+      <button class="nav-item active" data-nav="dashboard"><span class="dot"></span>Dashboard</button>
+      <button class="nav-item" data-nav="investigation"><span class="dot"></span>Investigate</button>
+      <button class="nav-item" data-nav="root-cause"><span class="dot"></span>Reports</button>
+      <button class="nav-item" disabled style="opacity:.45; cursor:default;"><span class="dot"></span>Settings</button>
+    </div>
+    <div class="sidebar-foot">
+      <div class="avatar">AM</div>
+      <div>
+        <div class="avatar-name">Alex Morgan</div>
+        <div class="avatar-role">VP Sales Ops</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- STEPPER -->
+    <div class="stepper" id="stepper">
+      <button class="step active" data-goto="dashboard"><span class="step-num">1</span>Ask</button>
+      <span class="step-arrow">›</span>
+      <button class="step" data-goto="investigation"><span class="step-num">2</span>Investigate</button>
+      <span class="step-arrow">›</span>
+      <button class="step" data-goto="network"><span class="step-num">3</span>Agent Network</button>
+      <span class="step-arrow">›</span>
+      <button class="step" data-goto="root-cause"><span class="step-num">4</span>Root Cause</button>
+      <span class="step-arrow">›</span>
+      <button class="step" data-goto="recommendation"><span class="step-num">5</span>Recommend</button>
+    </div>
+
+    <div class="screen-wrap">
+
+      <!-- SCREEN 1: DASHBOARD -->
+      <section class="screen visible" id="screen-dashboard">
+        <div class="greet">Good morning, Alex</div>
+        <div class="greet-sub">What would you like to understand today?</div>
+
+        <div class="ask-box">
+          <div class="ask-label">Ask a business question</div>
+          <div class="ask-input-row">
+            <input class="ask-input" id="question-input" type="text" placeholder="e.g. Why did revenue decline by 18% last month?" value="Why did revenue decline by 18% last month?">
+            <button class="btn btn-primary" id="start-investigation">Investigate →</button>
+          </div>
+        </div>
+        <div class="suggestions">
+          <button class="suggestion-chip" data-fill="Why did customer churn increase last quarter?">Why did customer churn increase?</button>
+          <button class="suggestion-chip" data-fill="Which products are underperforming this month?">Which products are underperforming?</button>
+          <button class="suggestion-chip" data-fill="Why did regional sales change in the West?">Why did regional sales change?</button>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-value">₹8.2 Cr</div>
+            <div class="kpi-delta down">↓ 18% vs last month</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Customers</div>
+            <div class="kpi-value">42,891</div>
+            <div class="kpi-delta up">↑ 4% vs last month</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Orders</div>
+            <div class="kpi-value">18,402</div>
+            <div class="kpi-delta down">↓ 12% vs last month</div>
+          </div>
+        </div>
+
+        <div class="section-label">Recent Investigations</div>
+        <div class="recent-item"><span>Why did revenue decline?</span><span class="badge badge-done">Completed</span></div>
+        <div class="recent-item"><span>Customer churn increase?</span><span class="badge badge-done">Completed</span></div>
+        <div class="recent-item"><span>Why did Western region underperform?</span><span class="badge badge-done">Completed</span></div>
+      </section>
+
+      <!-- SCREEN 2: INVESTIGATION IN PROGRESS -->
+      <section class="screen" id="screen-investigation">
+        <div class="eyebrow">Investigation</div>
+        <div class="screen-title">Running the investigation</div>
+        <div class="screen-sub">The orchestrator is planning and delegating to specialist agents in real time.</div>
+
+        <div class="question-banner" id="inv-question-banner">Why did revenue decline by 18% last month?</div>
+
+        <div class="investigate-grid">
+          <div class="card">
+            <div class="panel-title">Investigation plan</div>
+            <div class="checklist" id="checklist">
+              <div class="check-item" data-idx="0"><div class="check-icon pending"></div>Understanding business question</div>
+              <div class="check-item" data-idx="1"><div class="check-icon pending"></div>Creating investigation plan</div>
+              <div class="check-item" data-idx="2"><div class="check-icon pending"></div>Querying sales data</div>
+              <div class="check-item" data-idx="3"><div class="check-icon pending"></div>Analyzing regional performance</div>
+              <div class="check-item" data-idx="4"><div class="check-icon pending"></div>Investigating customer churn</div>
+              <div class="check-item" data-idx="5"><div class="check-icon pending"></div>Validating root cause</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="panel-title">Agent status</div>
+            <div class="agent-status-grid" id="agent-status-grid">
+              <div class="agent-status as-waiting" data-agent="sales"><span><span class="agent-status-dot"></span>Sales Agent</span><span class="agent-tag">WAITING</span></div>
+              <div class="agent-status as-waiting" data-agent="finance"><span><span class="agent-status-dot"></span>Finance Agent</span><span class="agent-tag">WAITING</span></div>
+              <div class="agent-status as-waiting" data-agent="customer"><span><span class="agent-status-dot"></span>Customer Agent</span><span class="agent-tag">WAITING</span></div>
+              <div class="agent-status as-waiting" data-agent="insight"><span><span class="agent-status-dot"></span>Insight Agent</span><span class="agent-tag">WAITING</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px; display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" id="to-network" disabled>View Agent Network →</button>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: AGENT NETWORK -->
+      <section class="screen" id="screen-network">
+        <div class="eyebrow">Architecture</div>
+        <div class="screen-title">Multi-agent orchestration</div>
+        <div class="screen-sub">The orchestrator delegates to specialist agents, each with its own data source. Click Replay to watch it again.</div>
+
+        <div class="network">
+          <div class="orch-node">
+            <div class="t1">Orchestrator</div>
+            <div class="t2">Business Analyst Agent</div>
+          </div>
+          <svg class="connectors" viewBox="0 0 600 70" preserveAspectRatio="none">
+            <path id="path-1" d="M 300 0 C 300 30, 100 30, 100 70"></path>
+            <path id="path-2" d="M 300 0 L 300 70"></path>
+            <path id="path-3" d="M 300 0 C 300 30, 500 30, 500 70"></path>
+          </svg>
+          <div class="agent-row">
+
+            <div class="agent-node expanded" id="node-sales" data-agent="sales">
+              <div class="agent-node-head">
+                <div class="agent-icon icon-sales">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"></polyline><polyline points="14 7 21 7 21 14"></polyline></svg>
+                </div>
+                <div>
+                  <div class="name">Sales Agent</div>
+                  <div class="subtitle">Revenue &amp; product data</div>
+                </div>
+              </div>
+              <div class="agent-node-foot">
+                <span class="agent-status-tag"><span class="dot"></span>Complete</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="agent-node-body">
+                <p><strong>Queried:</strong> product-level revenue, June vs July.</p>
+                <p style="margin-top:6px;"><strong>Found:</strong> Product X revenue down 42% — the single largest contributor to the decline.</p>
+              </div>
+            </div>
+
+            <div class="agent-node expanded" id="node-customer" data-agent="customer">
+              <div class="agent-node-head">
+                <div class="agent-icon icon-customer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div>
+                  <div class="name">Customer Agent</div>
+                  <div class="subtitle">Churn &amp; regional data</div>
+                </div>
+              </div>
+              <div class="agent-node-foot">
+                <span class="agent-status-tag"><span class="dot"></span>Complete</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="agent-node-body">
+                <p><strong>Queried:</strong> churn cohort by region.</p>
+                <p style="margin-top:6px;"><strong>Found:</strong> Churn up 11pp in the Western region, concentrated among Product X buyers.</p>
+              </div>
+            </div>
+
+            <div class="agent-node expanded" id="node-finance" data-agent="finance">
+              <div class="agent-node-head">
+                <div class="agent-icon icon-finance">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <div>
+                  <div class="name">Finance Agent</div>
+                  <div class="subtitle">Margin &amp; order data</div>
+                </div>
+              </div>
+              <div class="agent-node-foot">
+                <span class="agent-status-tag"><span class="dot"></span>Complete</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="agent-node-body">
+                <p><strong>Queried:</strong> average order value trend.</p>
+                <p style="margin-top:6px;"><strong>Found:</strong> AOV down 6%, consistent with an inventory shortage rather than pricing.</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="network-hint">Click any agent card to expand its findings</div>
+        </div>
+        <button class="btn btn-ghost btn-sm replay-btn" id="replay-network">↻ Replay animation</button>
+
+        <div style="margin-top:24px; display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" id="to-rootcause">View Root Cause →</button>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: ROOT CAUSE -->
+      <section class="screen" id="screen-root-cause">
+        <div class="eyebrow">Findings</div>
+        <div class="screen-title">Root cause identified</div>
+        <div class="screen-sub">Evidence gathered from three specialist agents, synthesized by the Insight Agent.</div>
+
+        <div class="card rc-headline">
+          <div class="rc-eyebrow">Revenue declined</div>
+          <div class="rc-main">↓ 18% month-over-month</div>
+          <div class="rc-cause-pill">Root cause: Product X inventory shortage</div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="section-label">Impact analysis</div>
+          <div class="impact-table">
+            <div class="impact-row"><span>Product X sales</span><span class="impact-val down">↓ 42%</span></div>
+            <div class="impact-row"><span>Western region</span><span class="impact-val down">↓ 27%</span></div>
+            <div class="impact-row"><span>Customer churn</span><span class="impact-val up">↑ 11%</span></div>
+            <div class="impact-row"><span>Average order value</span><span class="impact-val down">↓ 6%</span></div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="section-label">Revenue trend</div>
+          <div class="chart-bars">
+            <div class="bar-group">
+              <div class="bar-value mono">₹10.0Cr</div>
+              <div class="bar" style="height:130px;"></div>
+              <div class="bar-label">June</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-value mono">₹8.2Cr</div>
+              <div class="bar faded" style="height:107px;"></div>
+              <div class="bar-label">July</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="confidence-row">
+            <div class="conf-circle"><span>87%</span></div>
+            <div>
+              <div style="font-weight:600; font-size:14.5px;">Agent confidence</div>
+              <div style="font-size:13px; color:var(--text-soft);">Based on cross-validated evidence across 4 sources</div>
+            </div>
+          </div>
+          <div class="section-label" style="margin-top:16px;">Evidence sources</div>
+          <div class="evidence-list">
+            <span class="evidence-chip">Sales database</span>
+            <span class="evidence-chip">Inventory records</span>
+            <span class="evidence-chip">Customer data</span>
+            <span class="evidence-chip">Regional performance</span>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" id="to-recommendation">View Recommendation →</button>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: RECOMMENDATION -->
+      <section class="screen" id="screen-recommendation">
+        <div class="eyebrow">Decision</div>
+        <div class="screen-title">From insight to action</div>
+        <div class="screen-sub">The final step in the loop — a concrete, evidence-backed recommendation.</div>
+
+        <div class="card reco-card">
+          <div class="reco-label">AI RECOMMENDATION</div>
+          <div class="reco-text">Increase Product X inventory allocation in the Western region by ~20%.</div>
+          <div class="reco-impact">
+            <span class="val">+8–12%</span>
+            <span class="lbl">expected revenue recovery</span>
+          </div>
+          <div class="support-list">
+            <div class="support-item"><span class="check-mark">✓</span>Demand remains strong across the region</div>
+            <div class="support-item"><span class="check-mark">✓</span>Inventory shortage confirmed by warehouse records</div>
+            <div class="support-item"><span class="check-mark">✓</span>Western region has the highest revenue impact</div>
+          </div>
+          <div class="reco-actions">
+            <button class="btn btn-primary" id="approve-action">Approve Action</button>
+            <button class="btn btn-ghost" id="view-evidence-again" data-goto="root-cause">View Evidence</button>
+          </div>
+          <div class="approved-msg" id="approved-msg">✓ Action approved — inventory team notified.</div>
+        </div>
+
+        <div class="flow-recap">
+          <span class="node">Question</span>›<span class="node">Investigation</span>›<span class="node">Agents</span>›<span class="node">Evidence</span>›<span class="node">Root Cause</span>›<span class="node">Recommendation</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const screens = ['dashboard','investigation','network','root-cause','recommendation'];
+const stepMap = {dashboard:0, investigation:1, network:2, 'root-cause':3, recommendation:4};
+
+function showScreen(id){
+  screens.forEach(s=>{
+    document.getElementById('screen-'+s).classList.toggle('visible', s===id);
+  });
+  document.querySelectorAll('.step').forEach((el,i)=>{
+    el.classList.toggle('active', i===stepMap[id]);
+    el.classList.toggle('done', i<stepMap[id]);
+  });
+  const navMap = {dashboard:'dashboard', investigation:'investigation', network:'investigation', 'root-cause':'root-cause', recommendation:'root-cause'};
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.nav===navMap[id]);
+  });
+  window.scrollTo(0,0);
+  document.querySelector('.screen-wrap').scrollTo(0,0);
+}
+
+document.querySelectorAll('[data-goto]').forEach(el=>{
+  el.addEventListener('click', ()=> {
+    const target = el.dataset.goto;
+    showScreen(target);
+    if(target==='investigation') runInvestigation();
+    if(target==='network') runNetworkAnimation();
+  });
+});
+document.querySelectorAll('[data-nav]').forEach(el=>{
+  el.addEventListener('click', ()=> {
+    const map = {dashboard:'dashboard', investigation:'investigation', 'root-cause':'root-cause'};
+    showScreen(map[el.dataset.nav]);
+    if(el.dataset.nav==='investigation') runInvestigation();
+  });
+});
+
+document.querySelectorAll('.suggestion-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.getElementById('question-input').value = chip.dataset.fill;
+  });
+});
+
+document.getElementById('start-investigation').addEventListener('click', ()=>{
+  const q = document.getElementById('question-input').value.trim() || 'Why did revenue decline by 18% last month?';
+  document.getElementById('inv-question-banner').textContent = q;
+  showScreen('investigation');
+  runInvestigation();
+});
+
+let invRunning = false;
+function runInvestigation(){
+  if(invRunning) return;
+  invRunning = true;
+  const items = document.querySelectorAll('.check-item');
+  const agents = document.querySelectorAll('.agent-status');
+  const toNetworkBtn = document.getElementById('to-network');
+  toNetworkBtn.disabled = true;
+
+  items.forEach(it=>{
+    it.classList.remove('done','current');
+    it.querySelector('.check-icon').className = 'check-icon pending';
+  });
+  agents.forEach(a=>{
+    a.className = 'agent-status as-waiting';
+    a.querySelector('.agent-tag').textContent = 'WAITING';
+  });
+
+  const agentTriggers = { 2:'sales', 3:'finance', 4:'customer' };
+
+  let i = 0;
+  function step(){
+    if(i>0){
+      const prev = items[i-1];
+      prev.classList.remove('current');
+      prev.classList.add('done');
+      prev.querySelector('.check-icon').className = 'check-icon done';
+      prev.querySelector('.check-icon').textContent = '✓';
+    }
+    if(i < items.length){
+      const cur = items[i];
+      cur.classList.add('current');
+      cur.querySelector('.check-icon').className = 'check-icon current';
+
+      if(agentTriggers[i]){
+        const ag = document.querySelector('.agent-status[data-agent="'+agentTriggers[i]+'"]');
+        ag.className = 'agent-status as-active';
+        ag.querySelector('.agent-tag').textContent = 'ACTIVE';
+        if(i>0 && agentTriggers[i-1]){
+          const prevAg = document.querySelector('.agent-status[data-agent="'+agentTriggers[i-1]+'"]');
+          prevAg.className = 'agent-status as-complete';
+          prevAg.querySelector('.agent-tag').textContent = 'COMPLETE';
+        }
+      }
+      i++;
+      setTimeout(step, 850);
+    } else {
+      document.querySelectorAll('.agent-status').forEach(a=>{
+        if(a.dataset.agent !== 'insight'){
+          a.className='agent-status as-complete';
+          a.querySelector('.agent-tag').textContent='COMPLETE';
+        }
+      });
+      const insightAg = document.querySelector('.agent-status[data-agent="insight"]');
+      insightAg.className = 'agent-status as-active';
+      insightAg.querySelector('.agent-tag').textContent = 'SYNTHESIZING';
+      setTimeout(()=>{
+        insightAg.className = 'agent-status as-complete';
+        insightAg.querySelector('.agent-tag').textContent = 'COMPLETE';
+        toNetworkBtn.disabled = false;
+        invRunning = false;
+      }, 700);
+    }
+  }
+  step();
+}
+
+let netRunning = false;
+function runNetworkAnimation(){
+  if(netRunning) return;
+  netRunning = true;
+  const paths = ['path-1','path-2','path-3'];
+  const nodes = ['node-sales','node-customer','node-finance'];
+
+  paths.forEach(p=>document.getElementById(p).classList.remove('lit'));
+  nodes.forEach(n=>{
+    document.getElementById(n).classList.remove('lit');
+  });
+
+  let i=0;
+  function light(){
+    if(i < nodes.length){
+      document.getElementById(paths[i]).classList.add('lit');
+      document.getElementById(nodes[i]).classList.add('lit');
+      i++;
+      setTimeout(light, 550);
+    } else {
+      netRunning = false;
+    }
+  }
+  light();
+}
+document.getElementById('replay-network').addEventListener('click', runNetworkAnimation);
+
+// Expand/collapse agent findings on click
+document.querySelectorAll('.agent-node').forEach(node=>{
+  node.addEventListener('click', ()=>{
+    node.classList.toggle('expanded');
+  });
+});
+
+document.getElementById('to-network').addEventListener('click', ()=>{
+  showScreen('network');
+  runNetworkAnimation();
+});
+document.getElementById('to-rootcause').addEventListener('click', ()=> showScreen('root-cause'));
+document.getElementById('to-recommendation').addEventListener('click', ()=> showScreen('recommendation'));
+document.getElementById('approve-action').addEventListener('click', ()=>{
+  document.getElementById('approved-msg').classList.add('show');
+});
+</script>
+
+</body>
+</html>
