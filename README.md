@@ -20,11 +20,11 @@ InsightFlow AI can break this question into multiple investigations, delegate th
 
 ---
 
-# Demo
+### Demo
 
 [https://velvety-longma-63c045.netlify.app/](https://velvety-longma-63c045.netlify.app/)
 
-### Demo Video
+### Video Link
 
 [https://www.loom.com/share/64cb1e2745574986b0aea22ceb581686](https://www.loom.com/share/64cb1e2745574986b0aea22ceb581686)
 
