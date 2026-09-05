@@ -20,22 +20,13 @@ InsightFlow AI can break this question into multiple investigations, delegate th
 
 ---
 
-#  Demo
+# Demo
 
-```text
-https://velvety-longma-63c045.netlify.app/
-```
+[View Live Demo](https://velvety-longma-63c045.netlify.app/)
 
 ### Demo Video
 
-Add your Loom demo here:
-
-```text
-https://www.loom.com/share/64cb1e2745574986b0aea22ceb581686
-```
-
-### Hackathon Submission
-
+[Watch Loom Demo Video](https://www.loom.com/share/64cb1e2745574986b0aea22ceb581686)
 
 ---
 
