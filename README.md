@@ -301,7 +301,6 @@ The system generates actionable recommendations for the business user.
 * Vite
 * Tailwind CSS
 * JavaScript
-* Lucide Icons
 * Recharts / Data Visualization
 
 ## AI & Agent Layer
@@ -345,18 +344,11 @@ InsightFlow-AI/
 │   ├── services/
 │   └── ...
 │
-├── public/
-│
-├── docs/
-│   └── screenshots/
-│
 ├── .env.example
 ├── package.json
 ├── README.md
 └── ...
 ```
-
-> The structure may evolve as additional agent capabilities and backend services are added.
 
 ---
 
