@@ -578,41 +578,7 @@ YOUR_DEVPOST_LINK
 
 ---
 
-# 📸 Screenshots
 
-Add screenshots of the following sections:
-
-### Dashboard
-
-```text
-![InsightFlow Dashboard](docs/screenshots/dashboard.png)
-```
-
-### Investigation
-
-```text
-![Investigation](docs/screenshots/investigation.png)
-```
-
-### Agent Network
-
-```text
-![Agent Network](docs/screenshots/agent-network.png)
-```
-
-### Root Cause Analysis
-
-```text
-![Root Cause Analysis](docs/screenshots/root-cause.png)
-```
-
-### Recommendations
-
-```text
-![Recommendations](docs/screenshots/recommendations.png)
-```
-
----
 
 # ⚙️ Getting Started
 
