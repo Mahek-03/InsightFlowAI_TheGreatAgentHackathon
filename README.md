@@ -20,6 +20,29 @@ InsightFlow AI can break this question into multiple investigations, delegate th
 
 ---
 
+#  Demo
+
+```text
+YOUR_LIVE_DEMO_LINK
+```
+
+### Demo Video
+
+Add your Loom demo here:
+
+```text
+YOUR_LOOM_LINK
+```
+
+### Hackathon Submission
+
+**The Great Agent Hackathon 2026**
+
+```text
+YOUR_DEVPOST_LINK
+```
+---
+
 ##  Problem
 
 Businesses generate large amounts of data across different departments such as:
@@ -537,39 +560,7 @@ Root Cause Identified
      ↓
 Recommendations Generated
 ```
-
-This can help business teams spend less time searching for information and more time acting on insights.
-
 ---
-
-# 🎥 Demo
-
-### Live Prototype
-
-Add your live demo link here:
-
-```text
-YOUR_LIVE_DEMO_LINK
-```
-
-### Demo Video
-
-Add your Loom demo here:
-
-```text
-YOUR_LOOM_LINK
-```
-
-### Hackathon Submission
-
-**The Great Agent Hackathon 2026**
-
-```text
-YOUR_DEVPOST_LINK
-```
-
----
-
 
 
 # ⚙️ Getting Started
