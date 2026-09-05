@@ -23,7 +23,7 @@ InsightFlow AI can break this question into multiple investigations, delegate th
 #  Demo
 
 ```text
-YOUR_LIVE_DEMO_LINK
+https://velvety-longma-63c045.netlify.app/
 ```
 
 ### Demo Video
@@ -31,16 +31,12 @@ YOUR_LIVE_DEMO_LINK
 Add your Loom demo here:
 
 ```text
-YOUR_LOOM_LINK
+https://www.loom.com/share/64cb1e2745574986b0aea22ceb581686
 ```
 
 ### Hackathon Submission
 
-**The Great Agent Hackathon 2026**
 
-```text
-YOUR_DEVPOST_LINK
-```
 ---
 
 ##  Problem
@@ -352,7 +348,7 @@ The system generates actionable recommendations for the business user.
 * Git
 * GitHub
 * VS Code
-* Netfiy
+* Netlify
 ---
 
 #  Project Structure
